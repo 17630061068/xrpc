@@ -61,16 +61,23 @@ public class XrpcClient {
      */
     private Long prevInvokerTime=0L;
 
+    private Long keepAliveTime;
     /**
      * 默认的空闲时间
      */
-    private Long DEFAULT_KEEP_ALIVE_TIME = 10 * 1000L;
-
+    private Long DEFAULT_KEEP_ALIVE_TIME = 60 * 1000L;
 
 
     public XrpcClient(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
         this.xrpcProtocol = xrpcProtocol;
         this.bootstrap = bootstrap;
+        this.keepAliveTime = DEFAULT_KEEP_ALIVE_TIME;
+    }
+
+    public XrpcClient(XrpcProtocol xrpcProtocol, Bootstrap bootstrap, Long keepAliveTime) {
+        this.xrpcProtocol = xrpcProtocol;
+        this.bootstrap = bootstrap;
+        this.keepAliveTime = keepAliveTime == null ? DEFAULT_KEEP_ALIVE_TIME : keepAliveTime;
     }
 
     public void closeFutureIfKeepAlive() {
@@ -82,7 +89,7 @@ public class XrpcClient {
             try {
                 logger.info("keepAlive>{}, 自动关闭通道", DEFAULT_KEEP_ALIVE_TIME);
 
-                this.channel.closeFuture();
+                this.channel.close();
 
                 isConnection = Boolean.FALSE;
             } finally {

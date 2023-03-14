@@ -1,5 +1,6 @@
 package com.xzq.client.proxy;
 
+import com.xzq.client.XrpcClientConfig;
 import com.xzq.client.XrpcMessageHandler;
 import com.xzq.xrpc.remoting.codec.MessageCodec;
 import com.xzq.xrpc.remoting.codec.ProtocolFrameDecoder;
@@ -38,7 +39,8 @@ class ProxyFactoryTest {
                     }
                 });
 
-        ProxyFactory proxyFactory = new ProxyFactory(XrpcProtocol.DEFAULT_PROTOCOL(), bootstrap);
+
+        ProxyFactory proxyFactory = new ProxyFactory(XrpcProtocol.DEFAULT_PROTOCOL(), bootstrap, new XrpcClientConfig());
 
         UserClient userClient = proxyFactory.getProxy(UserClient.class, "127.0.0.1", 9999);
 

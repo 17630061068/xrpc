@@ -30,5 +30,6 @@ open source RPC framework
 3. 超时熔断
 
 ### 🎯 下一阶段开发工作 (1.0.1-SNAPSHOT)
-1. client对象和channel对象进行绑定，进行存活检测,长时间没有进行调用的channel进行关闭
+1. client对象和channel对象进行绑定，进行存活检测,长时间没有进行调用的channel进行关闭 done
 2. 注册中心整合nacos
+3. 解决提供者调用异常时，消费者的异常打印问题

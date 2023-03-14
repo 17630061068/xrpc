@@ -1,6 +1,7 @@
 package com.xzq.client.proxy;
 
 import com.xzq.client.XrpcClient;
+import com.xzq.client.XrpcClientConfig;
 import com.xzq.client.XrpcMessageHandler;
 import com.xzq.xrpc.remoting.codec.MessageCodec;
 import com.xzq.xrpc.remoting.codec.ProtocolFrameDecoder;
@@ -51,7 +52,7 @@ public class XrpClientTest {
                     }
                 });
 
-        XrpcClient xrpcClient = new XrpcClient(xrpcProtocol,bootstrap);
+        XrpcClient xrpcClient = new XrpcClient(xrpcProtocol, bootstrap);
 
 
         try {

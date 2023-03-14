@@ -15,7 +15,7 @@ public class XrpcResponseMessage extends Message {
     /**
      * 异常值
      */
-    private Exception exceptionValue;
+    private Throwable throwable;
 
     public Object getReturnValue() {
         return returnValue;
@@ -25,12 +25,13 @@ public class XrpcResponseMessage extends Message {
         this.returnValue = returnValue;
     }
 
-    public Exception getExceptionValue() {
-        return exceptionValue;
+
+    public Throwable getThrowable() {
+        return throwable;
     }
 
-    public void setExceptionValue(Exception exceptionValue) {
-        this.exceptionValue = exceptionValue;
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
     }
 
     @Override

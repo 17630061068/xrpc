@@ -32,10 +32,10 @@ public class XrpcMessageHandler extends SimpleChannelInboundHandler<XrpcResponse
 
         if (promise != null) {
             Object returnValue = xrpcResponseMessage.getReturnValue();
-            Exception exceptionValue = xrpcResponseMessage.getExceptionValue();
+            Throwable throwable = xrpcResponseMessage.getThrowable();
 
-            if (exceptionValue != null && !exceptionValue.equals("")) {
-                promise.setFailure(exceptionValue);
+            if (throwable != null) {
+                promise.setFailure(throwable);
             }else {
                 promise.setSuccess(returnValue);
             }
