@@ -15,6 +15,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
@@ -29,6 +31,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class XrpcClient {
 
+    private Logger logger = LoggerFactory.getLogger(XrpcClient.class);
+
     /**
      * 连接锁
      */
@@ -39,9 +43,9 @@ public class XrpcClient {
     private XrpcProtocol xrpcProtocol;
 
     /**
-     * Nio工作线程组
+     * netty 客户端服务器
      */
-    private NioEventLoopGroup worker;
+    private Bootstrap bootstrap;
     /**
      * channel 通道
      */
@@ -52,13 +56,46 @@ public class XrpcClient {
      */
     private Boolean isConnection = Boolean.FALSE;
 
+    /**
+     * 上次调用时间
+     */
+    private Long prevInvokerTime=0L;
 
-    public XrpcClient(XrpcProtocol xrpcProtocol, NioEventLoopGroup worker) {
+    /**
+     * 默认的空闲时间
+     */
+    private Long DEFAULT_KEEP_ALIVE_TIME = 10 * 1000L;
+
+
+
+    public XrpcClient(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
         this.xrpcProtocol = xrpcProtocol;
-        this.worker = worker;
+        this.bootstrap = bootstrap;
+    }
+
+    public void closeFutureIfKeepAlive() {
+
+        long currentTimeMillis = System.currentTimeMillis();
+
+        if ((currentTimeMillis - prevInvokerTime) > DEFAULT_KEEP_ALIVE_TIME && isConnection) {
+            connectionLock.lock();
+            try {
+                logger.info("keepAlive>{}, 自动关闭通道", DEFAULT_KEEP_ALIVE_TIME);
+
+                this.channel.closeFuture();
+
+                isConnection = Boolean.FALSE;
+            } finally {
+                connectionLock.unlock();
+            }
+        }
+
+
     }
 
     public ChannelFuture connect(InetSocketAddress address) throws InterruptedException {
+
+        ChannelFuture f = null;
 
         //双检锁
         if (!isConnection) {
@@ -67,25 +104,6 @@ public class XrpcClient {
             try {
                 if (!isConnection) {
 
-                    ChannelFuture f = null;
-
-                    Bootstrap bootstrap = new Bootstrap();
-
-                    bootstrap
-                            .group(worker)
-                            .channel(NioSocketChannel.class)
-                            .option(ChannelOption.AUTO_READ, true)
-                            .handler(new ChannelInitializer<SocketChannel>() {
-                                @Override
-                                protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    //半包粘包解码器
-                                    socketChannel.pipeline().addLast(new ProtocolFrameDecoder());
-                                    //消息编解码器
-                                    socketChannel.pipeline().addLast(new MessageCodec(xrpcProtocol));
-                                    //消息处理器
-                                    socketChannel.pipeline().addLast(new XrpcMessageHandler());
-                                }
-                            });
                     f = bootstrap.connect(address).sync();
 
                     channel = f.channel();
@@ -99,7 +117,7 @@ public class XrpcClient {
             }
         }
 
-        return null;
+        return f;
 
     }
 
@@ -107,6 +125,9 @@ public class XrpcClient {
 
         //RPC远程调用
         ChannelFuture cf = channel.writeAndFlush(xrpcRequestMessage);
+
+        //记录调用时间，用于空闲下线功能
+        prevInvokerTime = System.currentTimeMillis();
 
         cf.addListener(e -> {
             if (!e.isSuccess()) {
