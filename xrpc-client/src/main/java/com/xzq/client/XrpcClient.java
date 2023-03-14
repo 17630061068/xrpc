@@ -39,9 +39,9 @@ public class XrpcClient {
     private XrpcProtocol xrpcProtocol;
 
     /**
-     * Nio工作线程组
+     * netty 客户端服务器
      */
-    private NioEventLoopGroup worker;
+    private Bootstrap bootstrap;
     /**
      * channel 通道
      */
@@ -53,12 +53,14 @@ public class XrpcClient {
     private Boolean isConnection = Boolean.FALSE;
 
 
-    public XrpcClient(XrpcProtocol xrpcProtocol, NioEventLoopGroup worker) {
+    public XrpcClient(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
         this.xrpcProtocol = xrpcProtocol;
-        this.worker = worker;
+        this.bootstrap = bootstrap;
     }
 
     public ChannelFuture connect(InetSocketAddress address) throws InterruptedException {
+
+        ChannelFuture f = null;
 
         //双检锁
         if (!isConnection) {
@@ -67,25 +69,6 @@ public class XrpcClient {
             try {
                 if (!isConnection) {
 
-                    ChannelFuture f = null;
-
-                    Bootstrap bootstrap = new Bootstrap();
-
-                    bootstrap
-                            .group(worker)
-                            .channel(NioSocketChannel.class)
-                            .option(ChannelOption.AUTO_READ, true)
-                            .handler(new ChannelInitializer<SocketChannel>() {
-                                @Override
-                                protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    //半包粘包解码器
-                                    socketChannel.pipeline().addLast(new ProtocolFrameDecoder());
-                                    //消息编解码器
-                                    socketChannel.pipeline().addLast(new MessageCodec(xrpcProtocol));
-                                    //消息处理器
-                                    socketChannel.pipeline().addLast(new XrpcMessageHandler());
-                                }
-                            });
                     f = bootstrap.connect(address).sync();
 
                     channel = f.channel();
@@ -99,7 +82,7 @@ public class XrpcClient {
             }
         }
 
-        return null;
+        return f;
 
     }
 

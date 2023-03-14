@@ -1,6 +1,9 @@
 package com.xzq.client.proxy;
 
 import com.xzq.client.XrpcClient;
+import com.xzq.client.XrpcMessageHandler;
+import com.xzq.xrpc.remoting.codec.MessageCodec;
+import com.xzq.xrpc.remoting.codec.ProtocolFrameDecoder;
 import com.xzq.xrpc.remoting.message.Message;
 import com.xzq.xrpc.remoting.message.XrpcRequestMessage;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
@@ -29,11 +32,27 @@ public class XrpClientTest {
 
     public static void main(String[] args) {
 
+        Bootstrap bootstrap = new Bootstrap();
         XrpcProtocol xrpcProtocol = XrpcProtocol.DEFAULT_PROTOCOL();
-        NioEventLoopGroup worker = new NioEventLoopGroup();
 
+        bootstrap
+                .group(new NioEventLoopGroup())
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.AUTO_READ, true)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        //半包粘包解码器
+                        socketChannel.pipeline().addLast(new ProtocolFrameDecoder());
+                        //消息编解码器
+                        socketChannel.pipeline().addLast(new MessageCodec(xrpcProtocol));
+                        //消息处理器
+                        socketChannel.pipeline().addLast(new XrpcMessageHandler());
+                    }
+                });
 
-        XrpcClient xrpcClient = new XrpcClient(xrpcProtocol, worker);
+        XrpcClient xrpcClient = new XrpcClient(xrpcProtocol,bootstrap);
+
 
         try {
 

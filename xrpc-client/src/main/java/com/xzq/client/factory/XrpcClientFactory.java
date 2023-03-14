@@ -2,9 +2,7 @@ package com.xzq.client.factory;
 
 import com.xzq.client.XrpcClient;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
-import io.netty.channel.nio.NioEventLoopGroup;
-
-import java.net.InetSocketAddress;
+import io.netty.bootstrap.Bootstrap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,13 +20,15 @@ public abstract class XrpcClientFactory {
 
     private XrpcProtocol xrpcProtocol;
 
+    private Bootstrap bootstrap;
+
     public XrpcClientFactory() {
     }
 
-    public XrpcClientFactory(XrpcProtocol xrpcProtocol) {
+    public XrpcClientFactory(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
         this.xrpcProtocol = xrpcProtocol;
+        this.bootstrap = bootstrap;
     }
-
 
     public  XrpcClient getInstance(String host, int port) {
         XrpcClient xrpcClient = xrpcClientMap.get(getKey(host, port));
@@ -37,8 +37,9 @@ public abstract class XrpcClientFactory {
 
             instanceLock.lock();
             try {
-                xrpcClient = new XrpcClient(xrpcProtocol, new NioEventLoopGroup());
+                xrpcClient = new XrpcClient(xrpcProtocol, bootstrap);
             }finally {
+                xrpcClientMap.put(getKey(host, port), xrpcClient);
                 instanceLock.unlock();
             }
         }

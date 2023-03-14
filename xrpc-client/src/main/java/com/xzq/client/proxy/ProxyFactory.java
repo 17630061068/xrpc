@@ -5,6 +5,7 @@ import com.xzq.client.factory.XrpcClientFactory;
 import com.xzq.client.proxy.cglib.XrpcClientCglibProxy;
 import com.xzq.client.proxy.jdk.XrpcClientJdkProxy;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
+import io.netty.bootstrap.Bootstrap;
 import net.sf.cglib.proxy.Enhancer;
 
 import java.lang.reflect.Proxy;
@@ -27,8 +28,8 @@ public class ProxyFactory extends XrpcClientFactory {
 
     }
 
-    public ProxyFactory(XrpcProtocol xrpcProtocol) {
-        super(xrpcProtocol);
+    public ProxyFactory(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
+        super(xrpcProtocol, bootstrap);
     }
 
     public <T> T getProxy(Class<T> target, String host, int port) {
