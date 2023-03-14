@@ -37,5 +37,5 @@ open source RPC framework
 2. 注册中心整合nacos
 3. 解决提供者调用异常时，消费者的异常打印问题
 
-### Home
-https://github.com/17630061068/xrpc/wiki
+### 使用说明
+[Wiki](https://github.com/17630061068/xrpc/wiki)
