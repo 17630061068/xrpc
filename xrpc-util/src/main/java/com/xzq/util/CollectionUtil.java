@@ -1,6 +1,7 @@
 package com.xzq.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @Author xzq
@@ -15,5 +16,9 @@ public class CollectionUtil {
 
     public static Boolean notEmpty(Collection collection) {
         return cn.hutool.core.collection.CollectionUtil.isNotEmpty(collection);
+    }
+
+    public static Boolean isEmpty(Map<?,?> map) {
+        return cn.hutool.core.collection.CollectionUtil.isEmpty(map);
     }
 }
