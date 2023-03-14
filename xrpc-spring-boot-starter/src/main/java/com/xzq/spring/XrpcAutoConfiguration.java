@@ -1,5 +1,6 @@
 package com.xzq.spring;
 
+import com.xzq.client.XrpcClientConfig;
 import com.xzq.client.XrpcMessageHandler;
 import com.xzq.client.proxy.ProxyFactory;
 import com.xzq.register.RedisRegister;
@@ -7,6 +8,7 @@ import com.xzq.register.Register;
 import com.xzq.register.config.RegisterConfig;
 import com.xzq.server.XrpcServer;
 import com.xzq.server.factory.ProviderFactory;
+import com.xzq.spring.properties.ClientProperties;
 import com.xzq.spring.properties.RegisterProperties;
 import com.xzq.spring.properties.ServerProperties;
 import com.xzq.spring.properties.XrpcProperties;
@@ -32,7 +34,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({
         XrpcProperties.class,
         RegisterProperties.class,
-        ServerProperties.class
+        ServerProperties.class,
+        ClientProperties.class
 })
 @Configuration
 public class XrpcAutoConfiguration {
@@ -111,7 +114,11 @@ public class XrpcAutoConfiguration {
 
     @Bean
     public ProxyFactory proxyFactory() {
-        return new ProxyFactory(xrpcProtocol(), bootstrap());
+
+        XrpcClientConfig xrpcClientConfig = new XrpcClientConfig();
+        xrpcClientConfig.setKeepAliveTime(xrpcProperties.getClient().getKeepAliveTime());
+
+        return new ProxyFactory(xrpcProtocol(), bootstrap(), xrpcClientConfig);
     }
 
     @Bean

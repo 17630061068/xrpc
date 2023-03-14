@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -39,9 +40,9 @@ public class XrpcServerMessageHandler extends SimpleChannelInboundHandler<XrpcRe
             Method method = provider.getClass().getMethod(xrpcRequestMessage.getMethodName(), xrpcRequestMessage.getParameterTypes());
             Object result = method.invoke(provider, xrpcRequestMessage.getParameterValues());
             xrpcResponseMessage.setReturnValue(result);
-        } catch (Exception e) {
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
-            xrpcResponseMessage.setExceptionValue(e);
+            xrpcResponseMessage.setThrowable(e);
         }
 
         ctx.writeAndFlush(xrpcResponseMessage);

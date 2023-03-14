@@ -1,6 +1,7 @@
 package com.xzq.client.factory;
 
 import com.xzq.client.XrpcClient;
+import com.xzq.client.XrpcClientConfig;
 import com.xzq.util.CollectionUtil;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
 import io.netty.bootstrap.Bootstrap;
@@ -25,6 +26,8 @@ public abstract class XrpcClientFactory {
 
     private Bootstrap bootstrap;
 
+    private XrpcClientConfig xrpcClientConfig;
+
     private  ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
             1
     );
@@ -33,13 +36,15 @@ public abstract class XrpcClientFactory {
 
     }
 
-    public XrpcClientFactory(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
+    public XrpcClientFactory(XrpcProtocol xrpcProtocol, Bootstrap bootstrap, XrpcClientConfig xrpcClientConfig) {
         this.xrpcProtocol = xrpcProtocol;
         this.bootstrap = bootstrap;
+        this.xrpcClientConfig = xrpcClientConfig;
         //空闲检测并下线
+
         scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
             this.closeIfKeepAlive();
-        }, 0,5, TimeUnit.SECONDS);
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
 
@@ -53,7 +58,7 @@ public abstract class XrpcClientFactory {
 
                 if (xrpcClient == null) {
 
-                    xrpcClient = new XrpcClient(xrpcProtocol, bootstrap);
+                    xrpcClient = new XrpcClient(xrpcProtocol, bootstrap, xrpcClientConfig.getKeepAliveTime());
                 }
 
             }finally {

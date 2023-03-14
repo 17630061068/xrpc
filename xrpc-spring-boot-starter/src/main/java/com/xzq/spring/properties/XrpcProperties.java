@@ -16,6 +16,7 @@ public class XrpcProperties {
 
     private RegisterProperties register;
 
+    private ClientProperties client;
 
 
 }
