@@ -90,7 +90,7 @@ public class XrpcClient {
 
                     channel = f.channel();
 
-                    isConnection = Boolean.FALSE;
+                    isConnection = Boolean.TRUE;
 
                     return f;
                 }

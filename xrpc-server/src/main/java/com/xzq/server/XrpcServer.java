@@ -39,7 +39,7 @@ public class XrpcServer {
         this.providerFactory = providerFactory;
     }
 
-    public void lister(int port) {
+    public ChannelFuture lister(int port) {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 
         serverBootstrap
@@ -52,6 +52,7 @@ public class XrpcServer {
             ChannelFuture cf = serverBootstrap.bind(new InetSocketAddress(port)).sync();
             channel = cf.channel();
             logger.info(">>>>> xrpc server start success");
+            return cf;
         } catch (InterruptedException e) {
             logger.info(">>>>> xrpc server start fail");
             throw new RuntimeException(e);

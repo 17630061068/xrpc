@@ -14,6 +14,15 @@ public class RegisterConfig {
 
     private String auth;
 
+    public RegisterConfig() {
+    }
+
+    public RegisterConfig(String host, int port, String auth) {
+        this.host = host;
+        this.port = port;
+        this.auth = auth;
+    }
+
     public String getHost() {
         return host;
     }

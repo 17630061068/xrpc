@@ -1,6 +1,7 @@
 package com.xzq.spring.properties;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @Author xzq
@@ -8,6 +9,7 @@ import lombok.Data;
  * @Date 2023/3/13 23:36
  */
 @Data
+@ConfigurationProperties(prefix = "xrpc.register")
 public class RegisterProperties {
 
     private Redis redis;
