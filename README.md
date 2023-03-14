@@ -14,7 +14,7 @@ open source RPC framework
 ### 📑 目前进度
 
 1. 完成了基本的远程调用功能
-2. 可以独立与spring运行
+2. 可以独立运行
 3. 和springBoot进行了整合
 4. 融入了redis做注册中心
 
