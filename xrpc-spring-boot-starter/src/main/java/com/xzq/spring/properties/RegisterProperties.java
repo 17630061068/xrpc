@@ -29,8 +29,9 @@ public class RegisterProperties {
 
         private String serveraddr;
 
-        private String metaspace;
+        private String namespace;
 
-        private String auth;
+        private String userName;
+        private String password;
     }
 }
