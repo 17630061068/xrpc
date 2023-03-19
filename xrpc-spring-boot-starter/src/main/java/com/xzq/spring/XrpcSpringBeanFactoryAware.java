@@ -76,9 +76,10 @@ public class XrpcSpringBeanFactoryAware implements BeanFactoryAware, Initializin
             ProviderService providerService = new ProviderService();
             Class<?> serviceInterface = obj.getClass().getInterfaces()[0];
             providerService.setServiceName(serviceInterface.getName());
-            //公网Ip
-//            providerService.setHost(IpUtil.getPublicIP());
-            providerService.setHost(new InetSocketAddress(xrpcProperties.getServer().getPort()).getHostString());
+            //Ip地址
+            String ip = xrpcProperties.getServer().getEnablePublicIp() ?
+                    IpUtil.getPublicIp() : IpUtil.getIp();
+            providerService.setHost(ip);
             //xrpc服务器端口
             providerService.setPort(xrpcProperties.getServer().getPort());
             return providerService;

@@ -12,6 +12,7 @@ import com.xzq.register.Register;
 import com.xzq.register.config.RegisterConfig;
 import com.xzq.server.XrpcServer;
 import com.xzq.server.factory.ProviderFactory;
+import com.xzq.spring.logo.XrpcLogo;
 import com.xzq.spring.properties.ClientProperties;
 import com.xzq.spring.properties.RegisterProperties;
 import com.xzq.spring.properties.ServerProperties;
@@ -52,6 +53,15 @@ public class XrpcAutoConfiguration {
 
     public XrpcAutoConfiguration(XrpcProperties xrpcProperties) {
         this.xrpcProperties = xrpcProperties;
+
+        XrpcLogo xrpcLogo = new XrpcLogo();
+        xrpcLogo.println();
+
+    }
+
+    @Bean
+    public XrpcLogo xrpcLogo() {
+        return new XrpcLogo();
     }
 
     @Bean("bossGroup")
@@ -106,7 +116,7 @@ public class XrpcAutoConfiguration {
         Register register = null;
         try {
             Class<?> clazz = Class.forName("com.alibaba.nacos.api.naming.NamingService");
-            if (ObjectUtil.notNull(clazz)) {
+            if (ObjectUtil.notNull(clazz) && ObjectUtil.notNull(xrpcProperties.getRegister().getNacos())) {
                 Properties properties = new Properties();
                 properties.setProperty("serverAddr", xrpcProperties.getRegister().getNacos().getServeraddr());
                 properties.setProperty("namespace", xrpcProperties.getRegister().getNacos().getNamespace());
@@ -144,7 +154,9 @@ public class XrpcAutoConfiguration {
     public ProxyFactory proxyFactory() {
 
         XrpcClientConfig xrpcClientConfig = new XrpcClientConfig();
-        xrpcClientConfig.setKeepAliveTime(xrpcProperties.getClient().getKeepAliveTime());
+        if (ObjectUtil.notNull(xrpcProperties.getClient())) {
+            xrpcClientConfig.setKeepAliveTime(xrpcProperties.getClient().getKeepAliveTime());
+        }
 
         return new ProxyFactory(xrpcProtocol(), bootstrap(), xrpcClientConfig);
     }

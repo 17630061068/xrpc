@@ -17,80 +17,85 @@ import java.util.regex.Pattern;
  */
 public class IpUtil {
 
-
-    // 方法1
-
-    // 方法3
-    private static String getNowIP3() throws IOException {
-        String ip = null;
-        String objWebURL = "https://ip.900cha.com/";
-        BufferedReader br = null;
+    public static String getPrivateIp() {
         try {
-            URL url = new URL(objWebURL);
-            br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String s = "";
-            String webContent = "";
-            while ((s = br.readLine()) != null) {
-                if (s.indexOf("我的IP:") != -1) {
-                    ip = s.substring(s.indexOf(":") + 1);
-                    break;
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    if (!inetAddress.isLinkLocalAddress() && !inetAddress.isLoopbackAddress()
+                            && inetAddress instanceof java.net.Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
                 }
             }
-        } finally {
-            if (br != null)
-                br.close();
+        } catch (SocketException ex) {
+            ex.printStackTrace();
         }
-        if (StrUtil.isEmpty(ip)) {
-            throw new RuntimeException();
-        }
-        return ip;
+        return null;
     }
-    // 方法4
-    private static String getNowIP4() throws IOException {
-        String ip = null;
-        String objWebURL = "https://bajiu.cn/ip/";
-        BufferedReader br = null;
+
+    public static String getPublicIp() {
         try {
-            URL url = new URL(objWebURL);
-            br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String s = "";
-            String webContent = "";
-            while ((s = br.readLine()) != null) {
-                if (s.indexOf("互联网IP") != -1) {
-                    ip = s.substring(s.indexOf("'") + 1, s.lastIndexOf("'"));
-                    break;
+            String ip = null;
+            String objWebURL = "https://bajiu.cn/ip/";
+            BufferedReader br = null;
+            try {
+                URL url = new URL(objWebURL);
+                br = new BufferedReader(new InputStreamReader(url.openStream()));
+                String s = "";
+                String webContent = "";
+                while ((s = br.readLine()) != null) {
+                    if (s.indexOf("互联网IP") != -1) {
+                        ip = s.substring(s.indexOf("'") + 1, s.lastIndexOf("'"));
+                        break;
+                    }
+                }
+            } finally {
+                if (br != null)
+                    br.close();
+            }
+            if (StrUtil.isEmpty(ip)) {
+                throw new RuntimeException();
+            }
+            return ip;
+        } catch (Exception e) {
+            throw new RuntimeException("没有可用的公网ip");
+        }
+    }
+
+    public static String getIp() {
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    if (!inetAddress.isSiteLocalAddress()
+                            && !inetAddress.isLinkLocalAddress()
+                            && !inetAddress.isLoopbackAddress()
+                    ) {
+                        return inetAddress.getHostAddress();
+                    }
                 }
             }
-        } finally {
-            if (br != null)
-                br.close();
+
+
+            //如果没有公网Ip ,那么就获取局域网Ip
+            String privateIp = getPrivateIp();
+            if (ObjectUtil.notNull(privateIp)) {
+                return privateIp;
+            }
+            //如果没有局域网IP ,那么就本机回环地址127.0.0.1
+            return "127.0.0.1";
+        } catch (SocketException ex) {
+            ex.printStackTrace();
         }
-        if (StrUtil.isEmpty(ip)) {
-            throw new RuntimeException();
-        }
-        return ip;
-    }
-    public static String getPublicIP() {
-        String ip = null;
-        // 第三种方式
-        try {
-            ip = getNowIP3();
-            ip.trim();
-        } catch (Exception e) {
-            System.out.println("getPublicIP - getNowIP3 failed ~ ");
-        }
-        if (!StrUtil.isEmpty(ip))
-            return ip;
-        // 第四种方式
-        try {
-            ip = getNowIP4();
-            ip.trim();
-        } catch (Exception e) {
-            System.out.println("getPublicIP - getNowIP4 failed ~ ");
-        }
-        if (!StrUtil.isEmpty(ip))
-            return ip;
-        return ip;
+
+        throw new RuntimeException("获取本机IP地址失败");
     }
 
 }
