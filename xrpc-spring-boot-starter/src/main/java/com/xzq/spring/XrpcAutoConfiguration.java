@@ -1,8 +1,12 @@
 package com.xzq.spring;
 
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
 import com.xzq.client.XrpcClientConfig;
 import com.xzq.client.XrpcMessageHandler;
 import com.xzq.client.proxy.ProxyFactory;
+import com.xzq.register.NacosRegister;
 import com.xzq.register.RedisRegister;
 import com.xzq.register.Register;
 import com.xzq.register.config.RegisterConfig;
@@ -12,6 +16,7 @@ import com.xzq.spring.properties.ClientProperties;
 import com.xzq.spring.properties.RegisterProperties;
 import com.xzq.spring.properties.ServerProperties;
 import com.xzq.spring.properties.XrpcProperties;
+import com.xzq.util.ObjectUtil;
 import com.xzq.xrpc.remoting.codec.MessageCodec;
 import com.xzq.xrpc.remoting.codec.ProtocolFrameDecoder;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
@@ -25,6 +30,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Properties;
 
 /**
  * @Author xzq
@@ -96,14 +103,35 @@ public class XrpcAutoConfiguration {
 
     @Bean
     public Register register() {
-        RegisterConfig registerConfig = new RegisterConfig(
-                xrpcProperties.getRegister().getRedis().getHost(),
-                xrpcProperties.getRegister().getRedis().getPort(),
-                xrpcProperties.getRegister().getRedis().getAuth()
-        );
-        RedisRegister redisRegister = new RedisRegister(registerConfig);
-        redisRegister.init();
-        return redisRegister;
+        Register register = null;
+        try {
+            Class<?> clazz = Class.forName("com.alibaba.nacos.api.naming.NamingService");
+            if (ObjectUtil.notNull(clazz)) {
+                Properties properties = new Properties();
+                properties.setProperty("serverAddr", xrpcProperties.getRegister().getNacos().getServeraddr());
+                properties.setProperty("namespace", xrpcProperties.getRegister().getNacos().getNamespace());
+                if (ObjectUtil.notNull(xrpcProperties.getRegister().getNacos().getUserName())) {
+                    properties.setProperty("username",xrpcProperties.getRegister().getNacos().getUserName());
+                }
+                if (ObjectUtil.notNull(xrpcProperties.getRegister().getNacos().getPassword())) {
+                    properties.setProperty("password", xrpcProperties.getRegister().getNacos().getPassword());
+                }
+                NamingService namingService = NacosFactory.createNamingService(properties);
+                register = new NacosRegister(namingService);
+            }else{
+                RegisterConfig registerConfig = new RegisterConfig(
+                        xrpcProperties.getRegister().getRedis().getHost(),
+                        xrpcProperties.getRegister().getRedis().getPort(),
+                        xrpcProperties.getRegister().getRedis().getAuth()
+                );
+                register = new RedisRegister(registerConfig);
+                register.init();
+            }
+        } catch (ClassNotFoundException | NacosException e) {
+            throw new RuntimeException(e);
+        }
+
+        return register;
     }
 
 
