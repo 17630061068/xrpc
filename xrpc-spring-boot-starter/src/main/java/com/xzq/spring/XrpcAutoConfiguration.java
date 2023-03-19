@@ -106,7 +106,7 @@ public class XrpcAutoConfiguration {
         Register register = null;
         try {
             Class<?> clazz = Class.forName("com.alibaba.nacos.api.naming.NamingService");
-            if (ObjectUtil.notNull(clazz)) {
+            if (ObjectUtil.notNull(clazz) && ObjectUtil.notNull(xrpcProperties.getRegister().getNacos())) {
                 Properties properties = new Properties();
                 properties.setProperty("serverAddr", xrpcProperties.getRegister().getNacos().getServeraddr());
                 properties.setProperty("namespace", xrpcProperties.getRegister().getNacos().getNamespace());
@@ -144,7 +144,9 @@ public class XrpcAutoConfiguration {
     public ProxyFactory proxyFactory() {
 
         XrpcClientConfig xrpcClientConfig = new XrpcClientConfig();
-        xrpcClientConfig.setKeepAliveTime(xrpcProperties.getClient().getKeepAliveTime());
+        if (ObjectUtil.notNull(xrpcProperties.getClient())) {
+            xrpcClientConfig.setKeepAliveTime(xrpcProperties.getClient().getKeepAliveTime());
+        }
 
         return new ProxyFactory(xrpcProtocol(), bootstrap(), xrpcClientConfig);
     }
