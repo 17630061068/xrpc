@@ -20,6 +20,19 @@
         <module>xrpc-util</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>rdc-releases</id>
+            <name>rdc Releases</name>
+            <url>https://packages.aliyun.com/maven/repository/2232243-release-EELfth/</url>
+        </repository>
+        <snapshotRepository>
+            <id>rdc-snapshots</id>
+            <name>rdc Snapshots</name>
+            <url>https://packages.aliyun.com/maven/repository/2232243-snapshot-SAXKJw/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <revision>1.0.1-SNAPSHOT</revision>
         <maven.compiler.source>8</maven.compiler.source>

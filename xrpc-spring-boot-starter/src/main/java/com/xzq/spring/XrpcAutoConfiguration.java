@@ -12,6 +12,7 @@ import com.xzq.register.Register;
 import com.xzq.register.config.RegisterConfig;
 import com.xzq.server.XrpcServer;
 import com.xzq.server.factory.ProviderFactory;
+import com.xzq.spring.logo.XrpcLogo;
 import com.xzq.spring.properties.ClientProperties;
 import com.xzq.spring.properties.RegisterProperties;
 import com.xzq.spring.properties.ServerProperties;
@@ -52,6 +53,15 @@ public class XrpcAutoConfiguration {
 
     public XrpcAutoConfiguration(XrpcProperties xrpcProperties) {
         this.xrpcProperties = xrpcProperties;
+
+        XrpcLogo xrpcLogo = new XrpcLogo();
+        xrpcLogo.println();
+
+    }
+
+    @Bean
+    public XrpcLogo xrpcLogo() {
+        return new XrpcLogo();
     }
 
     @Bean("bossGroup")

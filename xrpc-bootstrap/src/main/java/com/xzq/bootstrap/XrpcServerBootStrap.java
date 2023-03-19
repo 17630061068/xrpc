@@ -189,7 +189,7 @@ public class XrpcServerBootStrap {
 
             providerService.setServiceName(serviceName);
             //                providerService.setHost(InetAddress.getLocalHost().getHostAddress());
-            providerService.setHost(IpUtil.getPublicIP());
+            providerService.setHost(IpUtil.getIp());
             providerService.setPort(address.getPort());
 
             return providerService;

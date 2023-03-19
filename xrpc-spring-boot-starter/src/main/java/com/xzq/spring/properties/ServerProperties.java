@@ -18,7 +18,13 @@ public class ServerProperties {
     private Boolean enable = Boolean.FALSE;
 
     /**
+     * 是否使用公网ip
+     */
+    private Boolean enablePublicIp = Boolean.FALSE;
+
+    /**
      * 指定服务端口
      */
     private Integer port;
+
 }
