@@ -28,13 +28,13 @@ open source RPC framework
 3. xrpc-core 完成IOC功能，解决循环依赖问题
 
 ### 🚕 待开发功能
-1. 心跳检测
+1. 心跳检测  done 开发完毕
 2. 负载均衡
 3. 超时熔断
 
 ### 🎯 下一阶段开发工作 (1.0.1-SNAPSHOT)
 1. client对象和channel对象进行绑定，进行存活检测,长时间没有进行调用的channel进行关闭 done
-2. 注册中心整合nacos
+2. 注册中心整合nacos done
 3. 解决提供者调用异常时，消费者的异常打印问题
 
 ### 使用说明

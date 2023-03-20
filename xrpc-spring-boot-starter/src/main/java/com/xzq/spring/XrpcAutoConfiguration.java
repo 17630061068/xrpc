@@ -20,6 +20,7 @@ import com.xzq.spring.properties.XrpcProperties;
 import com.xzq.util.ObjectUtil;
 import com.xzq.xrpc.remoting.codec.MessageCodec;
 import com.xzq.xrpc.remoting.codec.ProtocolFrameDecoder;
+import com.xzq.xrpc.remoting.handler.ClientHeatBeatHandler;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocolV1;
 import io.netty.bootstrap.Bootstrap;
@@ -28,11 +29,13 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author xzq
@@ -85,10 +88,13 @@ public class XrpcAutoConfiguration {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline().addLast(new IdleStateHandler(15, 10, 0, TimeUnit.SECONDS));
                         //半包粘包解码器
                         socketChannel.pipeline().addLast(new ProtocolFrameDecoder());
                         //消息编解码器
                         socketChannel.pipeline().addLast(new MessageCodec(xrpcProtocol()));
+                        //心跳检测处理哎
+                        socketChannel.pipeline().addLast(new ClientHeatBeatHandler());
                         //消息处理器
                         socketChannel.pipeline().addLast(new XrpcMessageHandler());
                     }
