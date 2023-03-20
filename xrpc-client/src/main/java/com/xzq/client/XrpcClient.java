@@ -7,10 +7,7 @@ import com.xzq.xrpc.remoting.message.Message;
 import com.xzq.xrpc.remoting.message.XrpcRequestMessage;
 import com.xzq.xrpc.remoting.protocol.XrpcProtocol;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -114,6 +111,19 @@ public class XrpcClient {
                     f = bootstrap.connect(address).sync();
 
                     channel = f.channel();
+
+
+                    //增加关闭回调函数 ,将XrpcClient的Channel连接状态设置为False
+                    channel.closeFuture().addListener(new ChannelFutureListener() {
+
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
+
+                            isConnection = Boolean.FALSE;
+
+                        }
+
+                    });
 
                     isConnection = Boolean.TRUE;
 
