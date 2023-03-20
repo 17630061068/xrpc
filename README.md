@@ -14,9 +14,14 @@ open source RPC framework
 ### 📑 目前进度
 
 1. 完成了基本的远程调用功能
-2. 可以独立运行
-3. 和springBoot进行了整合
-4. 融入了redis做注册中心
+2. 完成了简易版IOC和DI功能
+3. 可以独立运行
+4. 和springBoot进行了整合
+5. 注册中心整合redis+nacos
+6. client和server 使用ping-pong机制+netty[IdleHandler]完成心跳检测功能
+7. 支持jdk,json,protobuf等序列化机制
+8. 定义了Xrpc协议报文,使用LTC（Length-Type-Content）机制 解决TCP半包粘包
+9. Xrpc协议由11个字节组成协议头，4字节魔数，1字节版本号，1字节序列化方案，1字节消息指令类型，4字节长度
 
 ### 🚗 待优化功能
 
@@ -25,11 +30,11 @@ open source RPC framework
 3. xrpc-core 完成IOC功能，解决循环依赖问题
 
 ### 🚕 待开发功能
-1. 心跳检测  done 开发完毕
-2. 负载均衡
-3. 超时熔断
+1. 心跳检测 + 断线重连  done 开发完毕
+2. 负载均衡   
+3. 超时熔断   
 
 ### 🎯 下一阶段开发工作 (1.0.1-SNAPSHOT)
-1. client对象和channel对象进行绑定，进行存活检测,长时间没有进行调用的channel进行关闭 done
-2. 注册中心整合nacos done
-3. 解决提供者调用异常时，消费者的异常打印问题
+1. 解决提供者调用异常时，消费者的异常打印问题
+2. 完善XrpcClient,和XrpcServer职责划分（抽象其功能)
+3. 完善Xrpc-BootStrap 

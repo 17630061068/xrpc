@@ -42,9 +42,9 @@ public abstract class XrpcClientFactory {
         this.xrpcClientConfig = xrpcClientConfig;
         //空闲检测并下线
 
-        scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
-            this.closeIfKeepAlive();
-        }, 0, 30, TimeUnit.SECONDS);
+//        scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+//            this.closeIfKeepAlive();
+//        }, 0, 30, TimeUnit.SECONDS);
     }
 
 
