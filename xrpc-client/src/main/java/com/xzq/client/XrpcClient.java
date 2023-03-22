@@ -34,10 +34,6 @@ public class XrpcClient {
      * 连接锁
      */
     private ReentrantLock connectionLock = new ReentrantLock();
-    /**
-     * 协议
-     */
-    private XrpcProtocol xrpcProtocol;
 
     /**
      * netty 客户端服务器
@@ -65,14 +61,12 @@ public class XrpcClient {
     private Long DEFAULT_KEEP_ALIVE_TIME = 60 * 1000L;
 
 
-    public XrpcClient(XrpcProtocol xrpcProtocol, Bootstrap bootstrap) {
-        this.xrpcProtocol = xrpcProtocol;
+    public XrpcClient(Bootstrap bootstrap) {
         this.bootstrap = bootstrap;
         this.keepAliveTime = DEFAULT_KEEP_ALIVE_TIME;
     }
 
-    public XrpcClient(XrpcProtocol xrpcProtocol, Bootstrap bootstrap, Long keepAliveTime) {
-        this.xrpcProtocol = xrpcProtocol;
+    public XrpcClient(Bootstrap bootstrap, Long keepAliveTime) {
         this.bootstrap = bootstrap;
         this.keepAliveTime = keepAliveTime == null ? DEFAULT_KEEP_ALIVE_TIME : keepAliveTime;
     }
@@ -93,8 +87,6 @@ public class XrpcClient {
                 connectionLock.unlock();
             }
         }
-
-
     }
 
     public ChannelFuture connect(InetSocketAddress address) throws InterruptedException {

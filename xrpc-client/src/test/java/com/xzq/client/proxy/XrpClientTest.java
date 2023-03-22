@@ -52,7 +52,7 @@ public class XrpClientTest {
                     }
                 });
 
-        XrpcClient xrpcClient = new XrpcClient(xrpcProtocol, bootstrap);
+        XrpcClient xrpcClient = new XrpcClient(bootstrap);
 
 
         try {

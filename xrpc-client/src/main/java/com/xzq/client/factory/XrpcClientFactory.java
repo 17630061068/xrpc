@@ -58,7 +58,7 @@ public abstract class XrpcClientFactory {
 
                 if (xrpcClient == null) {
 
-                    xrpcClient = new XrpcClient(xrpcProtocol, bootstrap, xrpcClientConfig.getKeepAliveTime());
+                    xrpcClient = new XrpcClient(bootstrap, xrpcClientConfig.getKeepAliveTime());
                 }
 
             }finally {
