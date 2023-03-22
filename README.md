@@ -41,6 +41,9 @@ open source RPC framework
 1. 解决提供者调用异常时，消费者的异常打印问题
 2. 完善XrpcClient,和XrpcServer职责划分（抽象其功能)
 3. 完善Xrpc-BootStrap 
+4. 增加负载均衡功能,和超时熔断功能
+
 
 ### 使用说明
 [Wiki](https://github.com/17630061068/xrpc/wiki)
+
