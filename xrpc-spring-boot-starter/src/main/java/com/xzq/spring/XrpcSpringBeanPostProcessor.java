@@ -1,5 +1,7 @@
 package com.xzq.spring;
 
+import com.xzq.balance.LoadBalance;
+import com.xzq.balance.impl.PollLoadBalance;
 import com.xzq.client.proxy.ProxyFactory;
 import com.xzq.ioc.BeansException;
 import com.xzq.ioc.annotation.XrpcAutowired;
@@ -24,6 +26,8 @@ public class XrpcSpringBeanPostProcessor implements BeanPostProcessor {
     private ProxyFactory proxyFactory;
 
     private Register register;
+
+    private LoadBalance loadBalance = new PollLoadBalance();
 
 
     public XrpcSpringBeanPostProcessor(ProxyFactory proxyFactory, Register register) {
